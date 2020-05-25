@@ -14,8 +14,6 @@ interface IGwtListViewProps {
 }
 
 interface IGwtListViewState {
-  panes: IPane[];
-  actions: IAction[];
   panesToShow: number[];
 }
 
@@ -25,14 +23,7 @@ export class GWTListView extends Component<
 > {
   constructor(props: IGwtListViewProps) {
     super(props);
-    const panesFromGwt = parsePanes(props.gwtDocument);
-    const actionsFromGwt = parseActions(props.gwtDocument);
-    console.log("panesFromGwt", panesFromGwt);
-    console.log("actionsFromGwt", actionsFromGwt);
-    // I shouldn't copy data from props into state. such parsing should happen upstream
     this.state = {
-      panes: panesFromGwt,
-      actions: actionsFromGwt,
       panesToShow: [1]
     };
     this.onActionSelect = this.onActionSelect.bind(this);
@@ -56,7 +47,6 @@ export class GWTListView extends Component<
     console.log("user selected action that leads to pane Id = ", targetPaneId);
 
     this.setState(prevState => ({
-      //panesToShow: [...prevState.panesToShow, targetPaneId]
       panesToShow: this.addTargetPaneAfterCurrentPaneInPanes(
         prevState.panesToShow,
         currentPaneId,
@@ -76,8 +66,8 @@ export class GWTListView extends Component<
             return (
               <li key={paneId}>
                 <GwtPane
-                  pane={getPane(this.state.panes, paneId)}
-                  actions={this.state.actions}
+                  pane={getPane(parsePanes(this.props.gwtDocument), paneId)}
+                  actions={parseActions(this.props.gwtDocument)}
                   onActionSelect={this.onActionSelect}
                 />
               </li>
